@@ -1,0 +1,57 @@
+// https://www.geogebra.org/classic/s5wmsste
+
+// Constant variables
+#define L 2.5654 // Length of the car body
+#define PI 3.14159
+
+// Constant diff-eqs
+#define X_DOT v*cos(theta)
+#define Y_DOT v*sin(theta)
+#define THETA_DOT (v/L)*tan(alpha)
+#define NO_CHANGE 0
+
+// Variables
+[0, 100] x;
+[0, 100] y;
+
+[2] v;
+
+[-0.22689280275, 0.22689280275] alpha;
+[-100, 100] theta;
+
+[0, 30] time;
+
+// Right Turn
+{
+  mode 1;
+
+  invt:
+    (x <= 27.5);
+  flow:
+    d/dt[x] = X_DOT;
+    d/dt[y] = Y_DOT;
+    d/dt[theta] = THETA_DOT;
+    d/dt[alpha] = NO_CHANGE;
+  jump:
+    (x >= 27.5) ==> @2 true;
+}
+
+{
+  mode 2;
+
+  invt:
+    (y <= 700);
+  flow:
+    d/dt[x] = NO_CHANGE;
+    d/dt[y] = NO_CHANGE;
+    d/dt[theta] = NO_CHANGE;
+    d/dt[alpha] = NO_CHANGE;
+  jump:
+    (y >= 700) ==> @1 true;
+}
+
+init:
+  @1 (and (y = 0) (x = 0) (theta = PI/2) (alpha = -5./5180*PI));
+
+goal:
+  @2 true;

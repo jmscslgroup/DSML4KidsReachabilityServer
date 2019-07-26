@@ -1,0 +1,267 @@
+// Variables for the actual X and Y position of the car
+[0, 10] x;
+[0, 10] y;
+
+// Variables for the invt of the car in any given state
+// these variables cannot be hard coded because of the
+// way that templating works
+[0, 10] x_last;
+[0, 10] y_last;
+
+[0, 100] time;
+
+// Dummy state for the final resting place of the car
+{
+  mode 1;
+
+  invt:
+    true;
+
+  flow:
+    d/dt[x] = 0;
+    d/dt[y] = 0;
+    d/dt[x_last] = 0;
+    d/dt[y_last] = 0;
+  jump:
+    false ==> @1 true;
+}
+
+{# Iterate through every state given #}
+{%- for state in states %}
+{# For each state there needs to be four "sub states" 
+depending on which way the turn is happening #}
+  {%- set lower_bound = ((loop.index - 1) * 4) + 1 %}
+  {%- set upper_bound = ((loop.index - 1) * 4) + 4 %}
+  {%- set state_number = loop.index %}
+  {%- for i in range(lower_bound, upper_bound + 1) %}
+{
+  {# Keep track of the direction the car will be in after the turn #}
+  {%- set direction_after = -1 %}
+  // Super State: {{ state_number }}
+  // Direction: {{ i % 4 }}
+  mode {{ i + 1 }};
+
+  invt:
+    {%- if state.flow == 1 %}
+      {%- if i % 4 == 1 %}
+      // Straight north
+      (y <= y_last + 1);
+      {%- set direction_after = 1 %}
+      {%- endif %}
+      {%- if i % 4 == 2 %}
+      // Straight east
+      (x <= x_last + 1);
+      {%- set direction_after = 2 %}
+      {%- endif %}
+      {%- if i % 4 == 3 %}
+      // Straight south
+      (y >= y_last - 1);
+      {%- set direction_after = 3 %}
+      {%- endif %}
+      {%- if i % 4 == 0 %}
+      // Straight west
+      (x >= x_last - 1);
+      {%- set direction_after = 0 %}
+      {%- endif %}
+    {%- endif %}
+    {%- if state.flow == 3 %}
+      {%- if i % 4 == 1 %}
+      // Right turn north
+      (y <= y_last + 1);
+      (x <= x_last + 1);
+      {%- set direction_after = 2 %}
+      {%- endif %}
+      {%- if i % 4 == 2 %}
+      // Right turn east
+      (y >= y_last - 1);
+      (x <= x_last + 1);
+      {%- set direction_after = 3 %}
+      {%- endif %}
+      {%- if i % 4 == 3 %}
+      // Right turn south
+      (y >= y_last - 1);
+      (x >= x_last - 1);
+      {%- set direction_after = 0 %}
+      {%- endif %}
+      {%- if i % 4 == 0 %}
+      // Right turn west
+      (y <= y_last + 1);
+      (x >= x_last - 1);
+      {%- set direction_after = 1 %}
+      {%- endif %}
+    {%- endif %}
+    {%- if state.flow == 2 %}
+      {%- if i % 4 == 1 %}
+      // Left turn north
+      (y <= y_last + 1);
+      (x >= x_last - 1);
+      {%- set direction_after = 0 %}
+      {%- endif %}
+      {%- if i % 4 == 2 %}
+      // Left turn east
+      (y <= y_last + 1);
+      (x <= x_last + 1);
+      {%- set direction_after = 1 %}
+      {%- endif %}
+      {%- if i % 4 == 3 %}
+      // Left turn south
+      (y >= y_last - 1);
+      (x <= x_last + 1);
+      {%- set direction_after = 2 %}
+      {%- endif %}
+      {%- if i % 4 == 0 %}
+      // Left turn west
+      (y >= y_last - 1);
+      (x >= x_last - 1);
+      {%- set direction_after = 3 %}
+      {%- endif %}
+    {%- endif %}
+  flow:
+    {%- if state.flow == 1 %}
+      {%- if i % 4 == 1 %}
+      d/dt[y] = 1;
+      d/dt[x] = 0;
+      d/dt[x_last] = 0;
+      d/dt[y_last] = 0;
+      {%- endif %}
+      {%- if i % 4 == 2 %}
+      d/dt[y] = 0;
+      d/dt[x] = 1;
+      d/dt[x_last] = 0;
+      d/dt[y_last] = 0;
+      {%- endif %}
+      {%- if i % 4 == 3 %}
+      d/dt[y] = -1;
+      d/dt[x] = 0;
+      d/dt[x_last] = 0;
+      d/dt[y_last] = 0;
+      {%- endif %}
+      {%- if i % 4 == 0 %}
+      d/dt[y] = 0;
+      d/dt[x] = -1;
+      d/dt[x_last] = 0;
+      d/dt[y_last] = 0;
+      {%- endif %}
+    {%- endif %}
+    {%- if state.flow == 3 %}
+      {%- if i % 4 == 1 %}
+      d/dt[y] = 1;
+      d/dt[x] = 1;
+      d/dt[x_last] = 0;
+      d/dt[y_last] = 0;
+      {%- endif %}
+      {%- if i % 4 == 2 %}
+      d/dt[y] = -1;
+      d/dt[x] = 1;
+      d/dt[x_last] = 0;
+      d/dt[y_last] = 0;
+      {%- endif %}
+      {%- if i % 4 == 3 %}
+      d/dt[y] = -1;
+      d/dt[x] = -1;
+      d/dt[x_last] = 0;
+      d/dt[y_last] = 0;
+      {%- endif %}
+      {%- if i % 4 == 0 %}
+      d/dt[y] = 1;
+      d/dt[x] = -1;
+      d/dt[x_last] = 0;
+      d/dt[y_last] = 0;
+      {%- endif %}
+    {%- endif %}
+    {%- if state.flow == 2 %}
+      {%- if i % 4 == 1 %}
+      d/dt[y] = 1;
+      d/dt[x] = -1;
+      d/dt[x_last] = 0;
+      d/dt[y_last] = 0;
+      {%- endif %}
+      {%- if i % 4 == 2 %}
+      d/dt[y] = 1;
+      d/dt[x] = 1;
+      d/dt[x_last] = 0;
+      d/dt[y_last] = 0;
+      {%- endif %}
+      {%- if i % 4 == 3 %}
+      d/dt[y] = -1;
+      d/dt[x] = 1;
+      d/dt[x_last] = 0;
+      d/dt[y_last] = 0;
+      {%- endif %}
+      {%- if i % 4 == 0 %}
+      d/dt[y] = -1;
+      d/dt[x] = -1;
+      d/dt[x_last] = 0;
+      d/dt[y_last] = 0;
+      {%- endif %}
+    {%- endif %}
+  jump:
+  {%- for jump in state.jump %}
+    {%- set jump_to = ((jump + 1) * 4) + direction_after + 1 %}
+    {%- if jump == -1 %}
+      {%- set jump_to = 1 %}
+    {%- endif %}
+    {%- if state.flow == 1 %}
+      {%- if i % 4 == 1 %}
+      // Straight north
+      (y >= y_last + 1) ==> @{{ jump_to }} (and (x_last' = x) (y_last' = y));
+      {%- endif %}
+      {%- if i % 4 == 2 %}
+      // Straight east
+      (x >= x_last + 1) ==> @{{ jump_to }} (and (x_last' = x) (y_last' = y));
+      {%- endif %}
+      {%- if i % 4 == 3 %}
+      // Straight south
+      (y <= y_last - 1) ==> @{{ jump_to }} (and (x_last' = x) (y_last' = y));
+      {%- endif %}
+      {%- if i % 4 == 0 %}
+      // Straight west
+      (x <= x_last - 1) ==> @{{ jump_to }} (and (x_last' = x) (y_last' = y));
+      {%- endif %}
+    {%- endif %}
+    {%- if state.flow == 3 %}
+      {%- if i % 4 == 1 %}
+      // Right turn north
+      (and (y >= y_last + 1) (x >= x_last + 1)) ==> @{{ jump_to }} (and (x_last' = x) (y_last' = y));
+      {%- endif %}
+      {%- if i % 4 == 2 %}
+      // Right turn east
+      (and (y <= y_last - 1) (x >= x_last + 1)) ==> @{{ jump_to }} (and (x_last' = x) (y_last' = y));
+      {%- endif %}
+      {%- if i % 4 == 3 %}
+      // Right turn south
+      (and (y <= y_last - 1) (x <= x_last - 1)) ==> @{{ jump_to }} (and (x_last' = x) (y_last' = y));
+      {%- endif %}
+      {%- if i % 4 == 0 %}
+      // Right turn west
+      (and (y >= y_last + 1) (x <= x_last - 1)) ==> @{{ jump_to }} (and (x_last' = x) (y_last' = y));
+      {%- endif %}
+    {%- endif %}
+    {%- if state.flow == 2 %}
+      {%- if i % 4 == 1 %}
+      // Left turn north
+      (and (y >= y_last + 1) (x <= x_last - 1)) ==> @{{ jump_to }} (and (x_last' = x) (y_last' = y));
+      {%- endif %}
+      {%- if i % 4 == 2 %}
+      // Left turn east
+      (and (y >= y_last + 1) (x >= x_last + 1)) ==> @{{ jump_to }} (and (x_last' = x) (y_last' = y));
+    {%- endif %}
+      {%- if i % 4 == 3 %}
+      // Left turn south
+      (and (y <= y_last - 1) (x >= x_last + 1)) ==> @{{ jump_to }} (and (x_last' = x) (y_last' = y));
+      {%- endif %}
+      {%- if i % 4 == 0 %}
+      // Left turn west
+      (and (y <= y_last - 1) (x <= x_last - 1)) ==> @{{ jump_to }} (and (x_last' = x) (y_last' = y));
+      {%- endif %}
+    {%- endif %}
+  {%- endfor %}
+}
+  {%- endfor %}
+{%- endfor %}
+
+init:
+  @2 (and (y = 0) (x = 0) (x_last = 0) (y_last = 0));
+
+goal:
+  @1 true;
