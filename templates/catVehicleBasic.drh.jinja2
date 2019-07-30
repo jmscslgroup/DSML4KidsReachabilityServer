@@ -64,6 +64,32 @@ depending on which way the turn is happening #}
       {%- set direction_after = 0 %}
       {%- endif %}
     {%- endif %}
+    {%- if state.flow == 2 %}
+      {%- if i % 4 == 1 %}
+      // Left turn north
+      (y <= y_last + 1);
+      (x >= x_last - 1);
+      {%- set direction_after = 0 %}
+      {%- endif %}
+      {%- if i % 4 == 2 %}
+      // Left turn east
+      (y <= y_last + 1);
+      (x <= x_last + 1);
+      {%- set direction_after = 1 %}
+      {%- endif %}
+      {%- if i % 4 == 3 %}
+      // Left turn south
+      (y >= y_last - 1);
+      (x <= x_last + 1);
+      {%- set direction_after = 2 %}
+      {%- endif %}
+      {%- if i % 4 == 0 %}
+      // Left turn west
+      (y >= y_last - 1);
+      (x >= x_last - 1);
+      {%- set direction_after = 3 %}
+      {%- endif %}
+    {%- endif %}
     {%- if state.flow == 3 %}
       {%- if i % 4 == 1 %}
       // Right turn north
@@ -90,30 +116,56 @@ depending on which way the turn is happening #}
       {%- set direction_after = 1 %}
       {%- endif %}
     {%- endif %}
-    {%- if state.flow == 2 %}
+    {%- if state.flow == 4 %}
       {%- if i % 4 == 1 %}
-      // Left turn north
+      // ZigZagLeft north
       (y <= y_last + 1);
+      (x >= x_last - 1);
+      {%- set direction_after = 1 %}
+      {%- endif %}
+      {%- if i % 4 == 2 %}
+      // ZigZagLeft east
+      (y <= y_last + 1);
+      (x <= x_last + 1);
+      {%- set direction_after = 2 %}
+      {%- endif %}
+      {%- if i % 4 == 3 %}
+      // ZigZagLeft south
+      (y >= y_last - 1);
+      (x <= x_last + 1);
+      {%- set direction_after = 3 %}
+      {%- endif %}
+      {%- if i % 4 == 0 %}
+      // ZigZagLeft west
+      (y >= y_last - 1);
       (x >= x_last - 1);
       {%- set direction_after = 0 %}
       {%- endif %}
-      {%- if i % 4 == 2 %}
-      // Left turn east
+    {%- endif %}
+    {%- if state.flow == 5 %}
+      {%- if i % 4 == 1 %}
+      // ZigZagRight north
       (y <= y_last + 1);
       (x <= x_last + 1);
       {%- set direction_after = 1 %}
       {%- endif %}
-      {%- if i % 4 == 3 %}
-      // Left turn south
+      {%- if i % 4 == 2 %}
+      // ZigZagRight east
       (y >= y_last - 1);
       (x <= x_last + 1);
       {%- set direction_after = 2 %}
       {%- endif %}
-      {%- if i % 4 == 0 %}
-      // Left turn west
+      {%- if i % 4 == 3 %}
+      // ZigZagRight south
       (y >= y_last - 1);
       (x >= x_last - 1);
       {%- set direction_after = 3 %}
+      {%- endif %}
+      {%- if i % 4 == 0 %}
+      // ZigZagRight west
+      (y <= y_last + 1);
+      (x >= x_last - 1);
+      {%- set direction_after = 0 %}
       {%- endif %}
     {%- endif %}
   flow:
@@ -143,7 +195,7 @@ depending on which way the turn is happening #}
       d/dt[y_last] = 0;
       {%- endif %}
     {%- endif %}
-    {%- if state.flow == 3 %}
+    {%- if state.flow == 3 or state.flow == 5 %}
       {%- if i % 4 == 1 %}
       d/dt[y] = 1;
       d/dt[x] = 1;
@@ -169,7 +221,7 @@ depending on which way the turn is happening #}
       d/dt[y_last] = 0;
       {%- endif %}
     {%- endif %}
-    {%- if state.flow == 2 %}
+    {%- if state.flow == 2 or state.flow == 4 %}
       {%- if i % 4 == 1 %}
       d/dt[y] = 1;
       d/dt[x] = -1;
@@ -197,62 +249,62 @@ depending on which way the turn is happening #}
     {%- endif %}
   jump:
   {%- for jump in state.jump %}
-    {%- set jump_to = (jump * 4) + direction_after + 2 %}
+    {%- set jump_to = (jump * 4) + direction_after + 1   %}
     {%- if jump == -1 %}
       {%- set jump_to = 1 %}
     {%- endif %}
     {%- if state.flow == 1 %}
       {%- if i % 4 == 1 %}
       // Straight north
-      (y >= y_last + 1) ==> @{{ jump_to }} (and (x_last' = x) (y_last' = y));
+      (y >= y_last + 1) ==> @{{ jump_to }} (and (x_last' = x) (y_last' = y) (x' = x) (y' = y));
       {%- endif %}
       {%- if i % 4 == 2 %}
       // Straight east
-      (x >= x_last + 1) ==> @{{ jump_to }} (and (x_last' = x) (y_last' = y));
+      (x >= x_last + 1) ==> @{{ jump_to }} (and (x_last' = x) (y_last' = y) (x' = x) (y' = y));
       {%- endif %}
       {%- if i % 4 == 3 %}
       // Straight south
-      (y <= y_last - 1) ==> @{{ jump_to }} (and (x_last' = x) (y_last' = y));
+      (y <= y_last - 1) ==> @{{ jump_to }} (and (x_last' = x) (y_last' = y) (x' = x) (y' = y));
       {%- endif %}
       {%- if i % 4 == 0 %}
       // Straight west
-      (x <= x_last - 1) ==> @{{ jump_to }} (and (x_last' = x) (y_last' = y));
+      (x <= x_last - 1) ==> @{{ jump_to }} (and (x_last' = x) (y_last' = y) (x' = x) (y' = y));
       {%- endif %}
     {%- endif %}
-    {%- if state.flow == 3 %}
+    {%- if state.flow == 3 or state.flow == 5 %}
       {%- if i % 4 == 1 %}
       // Right turn north
-      (and (y >= y_last + 1) (x >= x_last + 1)) ==> @{{ jump_to }} (and (x_last' = x) (y_last' = y));
+      (and (y >= y_last + 1) (x >= x_last + 1)) ==> @{{ jump_to }} (and (x_last' = x) (y_last' = y) (x' = x) (y' = y));
       {%- endif %}
       {%- if i % 4 == 2 %}
       // Right turn east
-      (and (y <= y_last - 1) (x >= x_last + 1)) ==> @{{ jump_to }} (and (x_last' = x) (y_last' = y));
+      (and (y <= y_last - 1) (x >= x_last + 1)) ==> @{{ jump_to }} (and (x_last' = x) (y_last' = y) (x' = x) (y' = y));
       {%- endif %}
       {%- if i % 4 == 3 %}
       // Right turn south
-      (and (y <= y_last - 1) (x <= x_last - 1)) ==> @{{ jump_to }} (and (x_last' = x) (y_last' = y));
+      (and (y <= y_last - 1) (x <= x_last - 1)) ==> @{{ jump_to }} (and (x_last' = x) (y_last' = y) (x' = x) (y' = y));
       {%- endif %}
       {%- if i % 4 == 0 %}
       // Right turn west
-      (and (y >= y_last + 1) (x <= x_last - 1)) ==> @{{ jump_to }} (and (x_last' = x) (y_last' = y));
+      (and (y >= y_last + 1) (x <= x_last - 1)) ==> @{{ jump_to }} (and (x_last' = x) (y_last' = y) (x' = x) (y' = y));
       {%- endif %}
     {%- endif %}
-    {%- if state.flow == 2 %}
+    {%- if state.flow == 2 or state.flow == 4 %}
       {%- if i % 4 == 1 %}
       // Left turn north
-      (and (y >= y_last + 1) (x <= x_last - 1)) ==> @{{ jump_to }} (and (x_last' = x) (y_last' = y));
+      (and (y >= y_last + 1) (x <= x_last - 1)) ==> @{{ jump_to }} (and (x_last' = x) (y_last' = y) (x' = x) (y' = y));
       {%- endif %}
       {%- if i % 4 == 2 %}
       // Left turn east
-      (and (y >= y_last + 1) (x >= x_last + 1)) ==> @{{ jump_to }} (and (x_last' = x) (y_last' = y));
+      (and (y >= y_last + 1) (x >= x_last + 1)) ==> @{{ jump_to }} (and (x_last' = x) (y_last' = y) (x' = x) (y' = y));
     {%- endif %}
       {%- if i % 4 == 3 %}
       // Left turn south
-      (and (y <= y_last - 1) (x >= x_last + 1)) ==> @{{ jump_to }} (and (x_last' = x) (y_last' = y));
+      (and (y <= y_last - 1) (x >= x_last + 1)) ==> @{{ jump_to }} (and (x_last' = x) (y_last' = y) (x' = x) (y' = y));
       {%- endif %}
       {%- if i % 4 == 0 %}
       // Left turn west
-      (and (y <= y_last - 1) (x <= x_last - 1)) ==> @{{ jump_to }} (and (x_last' = x) (y_last' = y));
+      (and (y <= y_last - 1) (x <= x_last - 1)) ==> @{{ jump_to }} (and (x_last' = x) (y_last' = y) (x' = x) (y' = y));
       {%- endif %}
     {%- endif %}
   {%- endfor %}

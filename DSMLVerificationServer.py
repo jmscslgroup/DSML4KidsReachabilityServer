@@ -1,7 +1,9 @@
-from flask import Flask, request, json, Response
+from flask import Flask, request, Response
 from jinja2 import Template
 import logging
 import subprocess
+import sys
+import os
 
 # Setup the logging
 logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.DEBUG)
@@ -102,11 +104,13 @@ class MotionArray:
             self.states[-1].meta_name += "_LAST"
 
         # If the block is neither the
-        elif root_node_motion["name"] in ["Straight", "Right", "Left"]:
+        elif root_node_motion["name"] in ["Straight", "Right", "Left",
+                                          "ZigZagLeft", "ZigZagRight"]:
             logging.debug("Found normal block")
 
             motion = Motion()
             motion.flow = root_node_motion["Type"]
+            print(motion.flow)
             # motion.invt.append("Not Yet Implemented")
             motion.meta_name = "SIMPLE"
             self.states.append(motion)
@@ -254,7 +258,7 @@ def validate_path():
         return Response("{'status':'failed', 'validity':null}",
                         status=400, mimetype="application/json")
 
-    try: 
+    try:
         # Template the JSON
         ma = MotionArray(request.json)
         with open("dReachTempFile.drh", "w+") as f:
@@ -262,22 +266,32 @@ def validate_path():
 
         # Run dReach
         dReach_command = "dReach -z -k {} ".format(len(ma.states)) + \
-        "dReachTempFile.drh --visualize"
+                         "dReachTempFile.drh --visualize"
         print(dReach_command)
 
         p = subprocess.Popen(dReach_command,
                              stdout=subprocess.PIPE, shell=True)
         (output, err) = p.communicate()
 
-        if "SAT" in str(output):
-            return Response("{'status':'succeeded', 'validity': true}",
-                    status=201, mimetype="application/json")
-        else:
-            return Response("{'status':'succeeded', 'validity': false}",
-                    status=201, mimetype="application/json")
-        # Return the dReach response
-        # TODO: Return a suggestion
+        is_sat = True
 
+        if "SAT" in str(output):
+            output_split = output.split("\n")
+            for i, line in enumerate(output_split):
+                if "SMT: " in line and "SAT" not in output_split[i + 1]:
+                    print(output_split[i + 1])
+                    is_sat = False
+        else:
+            is_sat = False
+
+        if is_sat:
+            logging.debug("SAT")
+            return Response("{'status':'succeeded', 'validity': true}",
+                            status=201, mimetype="application/json")
+        else:
+            logging.debug("UNSAT")
+            return Response("{'status':'succeeded', 'validity': false}",
+                            status=201, mimetype="application/json")
 
     except Exception as e:
         logging.debug("Errored out: {}".format(str(e)))
@@ -285,3 +299,6 @@ def validate_path():
         return Response("{'status':'failed', 'validity':null}",
                         status=400, mimetype="application/json")
 
+
+if __name__ == "__main__":
+    app.run(host='0.0.0.0')
