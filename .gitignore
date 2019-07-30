@@ -1,3 +1,7 @@
 venv/
 *.pyc
 README.html
+*.png
+*.paths
+*.drh
+*.smt2.json

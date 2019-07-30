@@ -9,8 +9,8 @@ logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.DEBUG)
 # Open the template and get all of the text from the
 # template.
 template_text = ""
-template_file = "/home/alex/CAT/ReachabilityAnalysis/CATTest-Dreal/" + \
-                "Python_Scripts/templates/catVehicleBasic.drh.jinja2"
+template_file = "/home/alex/CAT/ReachabilityAnalysis/" + \
+                "ReachabilityServer/templates/catVehicleBasic.drh.jinja2"
 with open(template_file) as t_f:
     template_text += "".join(t_f.readlines())
 
@@ -185,6 +185,9 @@ class MotionArray:
                                   .format(i,
                                           self.states[i + jump_i].meta_name))
 
+            logging.info("State: {} has connections {}"
+                         .format(i, state.jump))
+
         self.states[-1].jump = [-1]
 
     def find_node(self, node_id):
@@ -244,8 +247,10 @@ def validate_path():
     """
 
     # Check that the request is actually valid JSON
+    print(request.data)
     if not request.json:
         # If not return a 400 error
+        logging.debug("Not valid JSON")
         return Response("{'status':'failed', 'validity':null}",
                         status=400, mimetype="application/json")
 
@@ -275,7 +280,8 @@ def validate_path():
 
 
     except Exception as e:
-        print(e)
+        logging.debug("Errored out: {}".format(str(e)))
+
         return Response("{'status':'failed', 'validity':null}",
                         status=400, mimetype="application/json")
 

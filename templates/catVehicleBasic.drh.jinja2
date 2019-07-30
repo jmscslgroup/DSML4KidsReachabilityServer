@@ -197,7 +197,7 @@ depending on which way the turn is happening #}
     {%- endif %}
   jump:
   {%- for jump in state.jump %}
-    {%- set jump_to = ((jump + 1) * 4) + direction_after + 1 %}
+    {%- set jump_to = (jump * 4) + direction_after + 2 %}
     {%- if jump == -1 %}
       {%- set jump_to = 1 %}
     {%- endif %}
