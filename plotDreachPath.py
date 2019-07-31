@@ -61,8 +61,6 @@ len(x) == len(y)
 
 
 import matplotlib.pyplot as plt
-get_ipython().magic('matplotlib inline')
-
 
 # In[60]:
 

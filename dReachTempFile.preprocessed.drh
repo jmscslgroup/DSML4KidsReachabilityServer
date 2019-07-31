@@ -26,7 +26,7 @@
       d/dt[x_last] = 0;
       d/dt[y_last] = 0;
   jump:
-      (and (y >= y_last + 1) (x >= x_last + 1)) ==> @6 (and (x_last' = x) (y_last' = y) (x' = x) (y' = y));
+      (and (y >= y_last + 1) (x >= x_last + 1)) ==> @7 (and (x_last' = x) (y_last' = y) (x' = x) (y' = y));
 }
 {
   mode 3;
@@ -39,7 +39,7 @@
       d/dt[x_last] = 0;
       d/dt[y_last] = 0;
   jump:
-      (and (y <= y_last - 1) (x >= x_last + 1)) ==> @7 (and (x_last' = x) (y_last' = y) (x' = x) (y' = y));
+      (and (y <= y_last - 1) (x >= x_last + 1)) ==> @8 (and (x_last' = x) (y_last' = y) (x' = x) (y' = y));
 }
 {
   mode 4;
@@ -52,7 +52,7 @@
       d/dt[x_last] = 0;
       d/dt[y_last] = 0;
   jump:
-      (and (y <= y_last - 1) (x <= x_last - 1)) ==> @8 (and (x_last' = x) (y_last' = y) (x' = x) (y' = y));
+      (and (y <= y_last - 1) (x <= x_last - 1)) ==> @5 (and (x_last' = x) (y_last' = y) (x' = x) (y' = y));
 }
 {
   mode 5;
@@ -65,12 +65,25 @@
       d/dt[x_last] = 0;
       d/dt[y_last] = 0;
   jump:
-      (and (y >= y_last + 1) (x <= x_last - 1)) ==> @5 (and (x_last' = x) (y_last' = y) (x' = x) (y' = y));
+      (and (y >= y_last + 1) (x <= x_last - 1)) ==> @6 (and (x_last' = x) (y_last' = y) (x' = x) (y' = y));
 }
 {
   mode 6;
   invt:
       (y <= y_last + 1);
+      (x >= x_last - 1);
+  flow:
+      d/dt[y] = 1;
+      d/dt[x] = -1;
+      d/dt[x_last] = 0;
+      d/dt[y_last] = 0;
+  jump:
+      (and (y >= y_last + 1) (x <= x_last - 1)) ==> @9 (and (x_last' = x) (y_last' = y) (x' = x) (y' = y));
+}
+{
+  mode 7;
+  invt:
+      (y <= y_last + 1);
       (x <= x_last + 1);
   flow:
       d/dt[y] = 1;
@@ -78,101 +91,36 @@
       d/dt[x_last] = 0;
       d/dt[y_last] = 0;
   jump:
-      (and (y >= y_last + 1) (x >= x_last + 1)) ==> @11 (and (x_last' = x) (y_last' = y) (x' = x) (y' = y));
-}
-{
-  mode 7;
-  invt:
-      (y >= y_last - 1);
-      (x <= x_last + 1);
-  flow:
-      d/dt[y] = -1;
-      d/dt[x] = 1;
-      d/dt[x_last] = 0;
-      d/dt[y_last] = 0;
-  jump:
-      (and (y <= y_last - 1) (x >= x_last + 1)) ==> @12 (and (x_last' = x) (y_last' = y) (x' = x) (y' = y));
+      (and (y >= y_last + 1) (x >= x_last + 1)) ==> @10 (and (x_last' = x) (y_last' = y) (x' = x) (y' = y));
 }
 {
   mode 8;
   invt:
       (y >= y_last - 1);
-      (x >= x_last - 1);
+      (x <= x_last + 1);
   flow:
       d/dt[y] = -1;
-      d/dt[x] = -1;
+      d/dt[x] = 1;
       d/dt[x_last] = 0;
       d/dt[y_last] = 0;
   jump:
-      (and (y <= y_last - 1) (x <= x_last - 1)) ==> @9 (and (x_last' = x) (y_last' = y) (x' = x) (y' = y));
+      (and (y <= y_last - 1) (x >= x_last + 1)) ==> @11 (and (x_last' = x) (y_last' = y) (x' = x) (y' = y));
 }
 {
   mode 9;
   invt:
-      (y <= y_last + 1);
+      (y >= y_last - 1);
       (x >= x_last - 1);
   flow:
-      d/dt[y] = 1;
+      d/dt[y] = -1;
       d/dt[x] = -1;
       d/dt[x_last] = 0;
       d/dt[y_last] = 0;
   jump:
-      (and (y >= y_last + 1) (x <= x_last - 1)) ==> @10 (and (x_last' = x) (y_last' = y) (x' = x) (y' = y));
+      (and (y <= y_last - 1) (x <= x_last - 1)) ==> @12 (and (x_last' = x) (y_last' = y) (x' = x) (y' = y));
 }
 {
   mode 10;
-  invt:
-      (y <= y_last + 1);
-      (x <= x_last + 1);
-  flow:
-      d/dt[y] = 1;
-      d/dt[x] = 1;
-      d/dt[x_last] = 0;
-      d/dt[y_last] = 0;
-  jump:
-      (and (y >= y_last + 1) (x >= x_last + 1)) ==> @15 (and (x_last' = x) (y_last' = y) (x' = x) (y' = y));
-}
-{
-  mode 11;
-  invt:
-      (y >= y_last - 1);
-      (x <= x_last + 1);
-  flow:
-      d/dt[y] = -1;
-      d/dt[x] = 1;
-      d/dt[x_last] = 0;
-      d/dt[y_last] = 0;
-  jump:
-      (and (y <= y_last - 1) (x >= x_last + 1)) ==> @16 (and (x_last' = x) (y_last' = y) (x' = x) (y' = y));
-}
-{
-  mode 12;
-  invt:
-      (y >= y_last - 1);
-      (x >= x_last - 1);
-  flow:
-      d/dt[y] = -1;
-      d/dt[x] = -1;
-      d/dt[x_last] = 0;
-      d/dt[y_last] = 0;
-  jump:
-      (and (y <= y_last - 1) (x <= x_last - 1)) ==> @13 (and (x_last' = x) (y_last' = y) (x' = x) (y' = y));
-}
-{
-  mode 13;
-  invt:
-      (y <= y_last + 1);
-      (x >= x_last - 1);
-  flow:
-      d/dt[y] = 1;
-      d/dt[x] = -1;
-      d/dt[x_last] = 0;
-      d/dt[y_last] = 0;
-  jump:
-      (and (y >= y_last + 1) (x <= x_last - 1)) ==> @14 (and (x_last' = x) (y_last' = y) (x' = x) (y' = y));
-}
-{
-  mode 14;
   invt:
       (y <= y_last + 1);
   flow:
@@ -184,7 +132,7 @@
       (y >= y_last + 1) ==> @1 (and (x_last' = x) (y_last' = y) (x' = x) (y' = y));
 }
 {
-  mode 15;
+  mode 11;
   invt:
       (x <= x_last + 1);
   flow:
@@ -196,7 +144,7 @@
       (x >= x_last + 1) ==> @1 (and (x_last' = x) (y_last' = y) (x' = x) (y' = y));
 }
 {
-  mode 16;
+  mode 12;
   invt:
       (y >= y_last - 1);
   flow:
@@ -208,7 +156,7 @@
       (y <= y_last - 1) ==> @1 (and (x_last' = x) (y_last' = y) (x' = x) (y' = y));
 }
 {
-  mode 17;
+  mode 13;
   invt:
       (x >= x_last - 1);
   flow:

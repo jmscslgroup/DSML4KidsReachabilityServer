@@ -35,7 +35,7 @@
   mode 2;
 
   invt:
-      // ZigZagRight north
+      // Right turn north
       (y <= y_last + 1);
       (x <= x_last + 1);
   flow:
@@ -45,7 +45,7 @@
       d/dt[y_last] = 0;
   jump:
       // Right turn north
-      (and (y >= y_last + 1) (x >= x_last + 1)) ==> @6 (and (x_last' = x) (y_last' = y) (x' = x) (y' = y));
+      (and (y >= y_last + 1) (x >= x_last + 1)) ==> @7 (and (x_last' = x) (y_last' = y) (x' = x) (y' = y));
 }
 {
   
@@ -54,7 +54,7 @@
   mode 3;
 
   invt:
-      // ZigZagRight east
+      // Right turn east
       (y >= y_last - 1);
       (x <= x_last + 1);
   flow:
@@ -64,7 +64,7 @@
       d/dt[y_last] = 0;
   jump:
       // Right turn east
-      (and (y <= y_last - 1) (x >= x_last + 1)) ==> @7 (and (x_last' = x) (y_last' = y) (x' = x) (y' = y));
+      (and (y <= y_last - 1) (x >= x_last + 1)) ==> @8 (and (x_last' = x) (y_last' = y) (x' = x) (y' = y));
 }
 {
   
@@ -73,7 +73,7 @@
   mode 4;
 
   invt:
-      // ZigZagRight south
+      // Right turn south
       (y >= y_last - 1);
       (x >= x_last - 1);
   flow:
@@ -83,7 +83,7 @@
       d/dt[y_last] = 0;
   jump:
       // Right turn south
-      (and (y <= y_last - 1) (x <= x_last - 1)) ==> @8 (and (x_last' = x) (y_last' = y) (x' = x) (y' = y));
+      (and (y <= y_last - 1) (x <= x_last - 1)) ==> @5 (and (x_last' = x) (y_last' = y) (x' = x) (y' = y));
 }
 {
   
@@ -92,7 +92,7 @@
   mode 5;
 
   invt:
-      // ZigZagRight west
+      // Right turn west
       (y <= y_last + 1);
       (x >= x_last - 1);
   flow:
@@ -102,7 +102,7 @@
       d/dt[y_last] = 0;
   jump:
       // Right turn west
-      (and (y >= y_last + 1) (x <= x_last - 1)) ==> @5 (and (x_last' = x) (y_last' = y) (x' = x) (y' = y));
+      (and (y >= y_last + 1) (x <= x_last - 1)) ==> @6 (and (x_last' = x) (y_last' = y) (x' = x) (y' = y));
 }
 
 {
@@ -112,17 +112,17 @@
   mode 6;
 
   invt:
-      // Right turn north
+      // Left turn north
       (y <= y_last + 1);
-      (x <= x_last + 1);
+      (x >= x_last - 1);
   flow:
       d/dt[y] = 1;
-      d/dt[x] = 1;
+      d/dt[x] = -1;
       d/dt[x_last] = 0;
       d/dt[y_last] = 0;
   jump:
-      // Right turn north
-      (and (y >= y_last + 1) (x >= x_last + 1)) ==> @11 (and (x_last' = x) (y_last' = y) (x' = x) (y' = y));
+      // Left turn north
+      (and (y >= y_last + 1) (x <= x_last - 1)) ==> @9 (and (x_last' = x) (y_last' = y) (x' = x) (y' = y));
 }
 {
   
@@ -131,17 +131,17 @@
   mode 7;
 
   invt:
-      // Right turn east
-      (y >= y_last - 1);
+      // Left turn east
+      (y <= y_last + 1);
       (x <= x_last + 1);
   flow:
-      d/dt[y] = -1;
+      d/dt[y] = 1;
       d/dt[x] = 1;
       d/dt[x_last] = 0;
       d/dt[y_last] = 0;
   jump:
-      // Right turn east
-      (and (y <= y_last - 1) (x >= x_last + 1)) ==> @12 (and (x_last' = x) (y_last' = y) (x' = x) (y' = y));
+      // Left turn east
+      (and (y >= y_last + 1) (x >= x_last + 1)) ==> @10 (and (x_last' = x) (y_last' = y) (x' = x) (y' = y));
 }
 {
   
@@ -150,17 +150,17 @@
   mode 8;
 
   invt:
-      // Right turn south
+      // Left turn south
       (y >= y_last - 1);
-      (x >= x_last - 1);
+      (x <= x_last + 1);
   flow:
       d/dt[y] = -1;
-      d/dt[x] = -1;
+      d/dt[x] = 1;
       d/dt[x_last] = 0;
       d/dt[y_last] = 0;
   jump:
-      // Right turn south
-      (and (y <= y_last - 1) (x <= x_last - 1)) ==> @9 (and (x_last' = x) (y_last' = y) (x' = x) (y' = y));
+      // Left turn south
+      (and (y <= y_last - 1) (x >= x_last + 1)) ==> @11 (and (x_last' = x) (y_last' = y) (x' = x) (y' = y));
 }
 {
   
@@ -169,17 +169,17 @@
   mode 9;
 
   invt:
-      // Right turn west
-      (y <= y_last + 1);
+      // Left turn west
+      (y >= y_last - 1);
       (x >= x_last - 1);
   flow:
-      d/dt[y] = 1;
+      d/dt[y] = -1;
       d/dt[x] = -1;
       d/dt[x_last] = 0;
       d/dt[y_last] = 0;
   jump:
-      // Right turn west
-      (and (y >= y_last + 1) (x <= x_last - 1)) ==> @10 (and (x_last' = x) (y_last' = y) (x' = x) (y' = y));
+      // Left turn west
+      (and (y <= y_last - 1) (x <= x_last - 1)) ==> @12 (and (x_last' = x) (y_last' = y) (x' = x) (y' = y));
 }
 
 {
@@ -187,83 +187,6 @@
   // Super State: 3
   // Direction: 1
   mode 10;
-
-  invt:
-      // Right turn north
-      (y <= y_last + 1);
-      (x <= x_last + 1);
-  flow:
-      d/dt[y] = 1;
-      d/dt[x] = 1;
-      d/dt[x_last] = 0;
-      d/dt[y_last] = 0;
-  jump:
-      // Right turn north
-      (and (y >= y_last + 1) (x >= x_last + 1)) ==> @15 (and (x_last' = x) (y_last' = y) (x' = x) (y' = y));
-}
-{
-  
-  // Super State: 3
-  // Direction: 2
-  mode 11;
-
-  invt:
-      // Right turn east
-      (y >= y_last - 1);
-      (x <= x_last + 1);
-  flow:
-      d/dt[y] = -1;
-      d/dt[x] = 1;
-      d/dt[x_last] = 0;
-      d/dt[y_last] = 0;
-  jump:
-      // Right turn east
-      (and (y <= y_last - 1) (x >= x_last + 1)) ==> @16 (and (x_last' = x) (y_last' = y) (x' = x) (y' = y));
-}
-{
-  
-  // Super State: 3
-  // Direction: 3
-  mode 12;
-
-  invt:
-      // Right turn south
-      (y >= y_last - 1);
-      (x >= x_last - 1);
-  flow:
-      d/dt[y] = -1;
-      d/dt[x] = -1;
-      d/dt[x_last] = 0;
-      d/dt[y_last] = 0;
-  jump:
-      // Right turn south
-      (and (y <= y_last - 1) (x <= x_last - 1)) ==> @13 (and (x_last' = x) (y_last' = y) (x' = x) (y' = y));
-}
-{
-  
-  // Super State: 3
-  // Direction: 0
-  mode 13;
-
-  invt:
-      // Right turn west
-      (y <= y_last + 1);
-      (x >= x_last - 1);
-  flow:
-      d/dt[y] = 1;
-      d/dt[x] = -1;
-      d/dt[x_last] = 0;
-      d/dt[y_last] = 0;
-  jump:
-      // Right turn west
-      (and (y >= y_last + 1) (x <= x_last - 1)) ==> @14 (and (x_last' = x) (y_last' = y) (x' = x) (y' = y));
-}
-
-{
-  
-  // Super State: 4
-  // Direction: 1
-  mode 14;
 
   invt:
       // Straight north
@@ -279,9 +202,9 @@
 }
 {
   
-  // Super State: 4
+  // Super State: 3
   // Direction: 2
-  mode 15;
+  mode 11;
 
   invt:
       // Straight east
@@ -297,9 +220,9 @@
 }
 {
   
-  // Super State: 4
+  // Super State: 3
   // Direction: 3
-  mode 16;
+  mode 12;
 
   invt:
       // Straight south
@@ -315,9 +238,9 @@
 }
 {
   
-  // Super State: 4
+  // Super State: 3
   // Direction: 0
-  mode 17;
+  mode 13;
 
   invt:
       // Straight west
