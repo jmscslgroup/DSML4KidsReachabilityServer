@@ -375,24 +375,32 @@ def validate_path():
         # is reached
         is_sat = True
 
+        # dReach will try multiple paths. If any of them are SAT then
+        # check if all of them are SAT
         if "SAT" in str(output):
             output_split = output.split("\n")
             for i, line in enumerate(output_split):
+                # Each SMT line indicates a path that dReach checked
+                # there should be a SAT or unsat on the next line
                 if "SMT: " in line and "SAT" not in output_split[i + 1]:
-                    print(output_split[i + 1])
                     is_sat = False
         else:
             is_sat = False
 
+        # If the response from dReach is SAT then log that and return
+        # the response from the webserver
         if is_sat:
             logging.debug("SAT")
             return Response("{'status':'succeeded', 'validity': true}",
                             status=201, mimetype="application/json")
+        # If the response is UNSAT then log that and return the response
+        # from the webserver
         else:
             logging.debug("UNSAT")
             return Response("{'status':'succeeded', 'validity': false}",
                             status=201, mimetype="application/json")
 
+    # Treat any exception as a failed check
     except Exception as e:
         logging.debug("Errored out: {}".format(str(e)))
 
@@ -401,4 +409,5 @@ def validate_path():
 
 
 if __name__ == "__main__":
+
     app.run(host='0.0.0.0')
